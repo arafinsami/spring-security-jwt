@@ -3,13 +3,6 @@ package com.sami;
 import com.sami.entity.AppUser;
 import com.sami.entity.Role;
 import com.sami.service.AppUserService;
-
-import io.swagger.v3.oas.models.Components;
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.info.License;
-
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -25,7 +18,7 @@ public class SpringSecurityJwtApplication {
         SpringApplication.run(SpringSecurityJwtApplication.class, args);
     }
 
-    @Bean
+    /*@Bean
     CommandLineRunner runner(AppUserService userService) {
         return args -> {
             Collection<Role> roles = new ArrayList<>();
@@ -40,5 +33,5 @@ public class SpringSecurityJwtApplication {
             user.setRoles(roles);
             userService.saveUser(user);
         };
-    }
+    }*/
 }

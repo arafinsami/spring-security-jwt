@@ -1,8 +1,7 @@
 package com.sami.filter;
 
-import com.auth0.jwt.algorithms.Algorithm;
 import com.sami.dto.LoginDto;
-import com.sami.utils.JwtUtils;
+import com.sami.utils.JWTUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,7 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static com.sami.utils.JwtUtils.login;
+import static com.sami.utils.JWTUtils.login;
 
 @Slf4j
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -38,9 +37,8 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
         User user = (User) authentication.getPrincipal();
-        Algorithm algorithm = JwtUtils.getAlgorithm();
-        String accessToken = JwtUtils.getAccessToken(request, user, algorithm);
-        String refreshToken = JwtUtils.getRefreshToken(request, user, algorithm);
-        JwtUtils.setHeader(response, accessToken, refreshToken);
+        String accessToken = JWTUtils.getAccessToken(request, user, JWTUtils.getAlgorithm());
+        String refreshToken = JWTUtils.getRefreshToken(request, user, JWTUtils.getAlgorithm());
+        JWTUtils.setHeader(response, accessToken, refreshToken);
     }
 }

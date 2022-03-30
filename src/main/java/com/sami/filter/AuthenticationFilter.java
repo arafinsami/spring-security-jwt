@@ -3,7 +3,6 @@ package com.sami.filter;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.sami.dto.LoginDto;
 import com.sami.utils.JwtUtils;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,10 +20,13 @@ import java.io.IOException;
 import static com.sami.utils.JwtUtils.login;
 
 @Slf4j
-@RequiredArgsConstructor
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
+
+    public AuthenticationFilter(AuthenticationManager authenticationManager) {
+        this.authenticationManager = authenticationManager;
+    }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {

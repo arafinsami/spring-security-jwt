@@ -5,6 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sami.dto.LoginDto;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
@@ -23,8 +24,40 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Component
 public class JwtUtils {
 
+    @Value("${authSecret}")
+    private String authSecret;
+
+    @Value("${claims}")
+    private String claims;
+
+    @Value("${accessToken}")
+    private String accessToken;
+
+    @Value("${refreshToken}")
+    private String refreshToken;
+
+    @Value("${authSecret}")
+    public void setAuthSecret(String authSecret){
+        JwtConstants.AUTH_SECRET = authSecret;
+    }
+
+    @Value("${claims}")
+    public void setClaims(String claims){
+        JwtConstants.CLAIMS = claims;
+    }
+
+    @Value("${accessToken}")
+    public void setAccessToken(String accessToken){
+        JwtConstants.ACCESS_TOKEN = accessToken;
+    }
+
+    @Value("${refreshToken}")
+    public void setRefreshToken(String refreshToken){
+        JwtConstants.REFRESH_TOKEN = refreshToken;
+    }
+
     public static Algorithm getAlgorithm() {
-        Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
+        Algorithm algorithm = Algorithm.HMAC256(JwtConstants.AUTH_SECRET.getBytes());
         return algorithm;
     }
 
@@ -33,7 +66,9 @@ public class JwtUtils {
                 .withSubject(user.getUsername())
                 .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 60 * 1000))
                 .withIssuer(request.getRequestURL().toString())
-                .withClaim("roles", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
+                .withClaim(JwtConstants.CLAIMS, user.getAuthorities().stream()
+                        .map(GrantedAuthority::getAuthority)
+                        .collect(Collectors.toList()))
                 .sign(algorithm);
         return accessToken;
     }
@@ -49,8 +84,8 @@ public class JwtUtils {
 
     public static void setHeader(HttpServletResponse response, String accessToken, String refreshToken) throws IOException {
         Map<String, String> tokens = new HashMap<>();
-        tokens.put("accessToken", accessToken);
-        tokens.put("refreshToken", refreshToken);
+        tokens.put(JwtConstants.ACCESS_TOKEN, accessToken);
+        tokens.put(JwtConstants.REFRESH_TOKEN, refreshToken);
         response.setContentType(APPLICATION_JSON_VALUE);
         new ObjectMapper().writeValue(response.getOutputStream(), tokens);
     }

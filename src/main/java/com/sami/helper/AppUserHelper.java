@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.sami.utils.JWTConstants.BEARER;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -26,9 +27,9 @@ public record AppUserHelper(AppUserService userService) {
 
     public void generateAccessToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String authorizationHeader = request.getHeader(AUTHORIZATION);
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+        if (authorizationHeader != null && authorizationHeader.startsWith(BEARER)) {
             try {
-                String refreshToken = authorizationHeader.substring("Bearer ".length());
+                String refreshToken = authorizationHeader.substring(BEARER.length());
                 Algorithm algorithm = JWTUtils.getAlgorithm();
                 JWTVerifier verifier = JWT.require(algorithm).build();
                 DecodedJWT decodedJWT = verifier.verify(refreshToken);

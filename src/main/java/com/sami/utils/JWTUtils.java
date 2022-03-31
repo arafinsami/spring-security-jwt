@@ -4,6 +4,8 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sami.dto.LoginDto;
+import com.sami.entity.AppUser;
+import com.sami.entity.Role;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
@@ -44,32 +46,32 @@ public class JWTUtils {
     private String refreshTokenExpireTime;
 
     @Value("${authSecret}")
-    public void setAuthSecret(String authSecret){
+    public void setAuthSecret(String authSecret) {
         JWTConstants.AUTH_SECRET = authSecret;
     }
 
     @Value("${claims}")
-    public void setClaims(String claims){
+    public void setClaims(String claims) {
         JWTConstants.CLAIMS = claims;
     }
 
     @Value("${accessToken}")
-    public void setAccessToken(String accessToken){
+    public void setAccessToken(String accessToken) {
         JWTConstants.ACCESS_TOKEN = accessToken;
     }
 
     @Value("${refreshToken}")
-    public void setRefreshToken(String refreshToken){
+    public void setRefreshToken(String refreshToken) {
         JWTConstants.REFRESH_TOKEN = refreshToken;
     }
 
     @Value("${accessTokenExpireTime}")
-    public void setAccessTokenExpireTime(String accessTokenExpireTime){
+    public void setAccessTokenExpireTime(String accessTokenExpireTime) {
         JWTConstants.ACCESS_TOKEN_EXPIRE_TIME = accessTokenExpireTime;
     }
 
     @Value("${refreshTokenExpireTime}")
-    public void setRefreshTokenExpireTime(String refreshTokenExpireTime){
+    public void setRefreshTokenExpireTime(String refreshTokenExpireTime) {
         JWTConstants.REFRESH_TOKEN_EXPIRE_TIME = refreshTokenExpireTime;
     }
 
@@ -90,11 +92,26 @@ public class JWTUtils {
         return accessToken;
     }
 
+    public static String getAccessToken(HttpServletRequest request, AppUser user, Algorithm algorithm) {
+        String accessToken = JWT.create()
+                .withSubject(user.getUsername())
+                .withExpiresAt(setAccessTokenExpireDate())
+                .withIssuer(request.getRequestURL().toString())
+                .withClaim(JWTConstants.CLAIMS, user.getRoles().stream()
+                        .map(Role::getName)
+                        .collect(Collectors.toList()))
+                .sign(algorithm);
+        return accessToken;
+    }
+
     public static String getRefreshToken(HttpServletRequest request, User user, Algorithm algorithm) {
         String refreshToken = JWT.create()
                 .withSubject(user.getUsername())
                 .withExpiresAt(setRefreshTokenExpireDate())
                 .withIssuer(request.getRequestURL().toString())
+                .withClaim(JWTConstants.CLAIMS, user.getAuthorities().stream()
+                        .map(GrantedAuthority::getAuthority)
+                        .collect(Collectors.toList()))
                 .sign(algorithm);
         return refreshToken;
     }

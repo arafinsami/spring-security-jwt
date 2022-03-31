@@ -35,6 +35,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private static final String[] PUBLIC_MATECHERS = {
             "/setup",
+            "/generate/refresh_token",
             "/api/login",
             "/v3/api-docs/*",
             "/configuration/ui",

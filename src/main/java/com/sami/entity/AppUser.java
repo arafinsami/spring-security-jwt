@@ -1,6 +1,7 @@
 package com.sami.entity;
 
 import lombok.Data;
+import org.springframework.security.core.userdetails.User;
 
 import javax.persistence.*;
 import java.io.Serializable;

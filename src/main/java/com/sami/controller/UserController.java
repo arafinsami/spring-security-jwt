@@ -4,11 +4,9 @@ import com.sami.dto.UserDto;
 import com.sami.helper.AppUserHelper;
 import com.sami.service.AppUserService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
@@ -37,10 +35,8 @@ public record UserController(AppUserService userService,
     @GetMapping("/lists")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "show lists of users", description = "lists of users")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "found users", content = {
-                    @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = UserDto.class)))
-            })
+    @ApiResponse(responseCode = "200", content = {
+            @Content(mediaType = "application/json", schema = @Schema(implementation = UserDto.class))
     })
     public ResponseEntity<JSONObject> findAll() {
         List<UserDto> users = userService.findAll().stream()
